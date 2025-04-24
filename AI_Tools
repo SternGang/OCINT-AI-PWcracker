@@ -14,8 +14,8 @@ def DecodeAIRetur( response ):
     response=response.replace("', 'sources': [], 'media': []}","")
     return response
 
-
-
-
-
-
+def genPasswords(interests):
+    prompt="what are likly passwords for a person with the following interests "+interests+" return this as a list with not comentary"
+    print(GetResponse(prompt))
+    return(GetResponse(prompt))
+    
