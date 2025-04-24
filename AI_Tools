@@ -1,0 +1,21 @@
+from meta_ai_api import MetaAI as AI
+
+def GetResponse (Prompt):
+    ai = AI()
+    response = ai.prompt(Prompt)
+    response=str(response)
+    return(DecodeAIRetur(Prompt))
+     
+
+
+def DecodeAIRetur( response ):
+    response=response.replace('\\n', '\n').replace('\\t', '\t')
+    response=response.replace("{'message': '","")
+    response=response.replace("', 'sources': [], 'media': []}","")
+    return response
+
+
+
+
+
+
