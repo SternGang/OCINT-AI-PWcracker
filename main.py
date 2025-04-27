@@ -4,5 +4,5 @@ import Ralis_Sniffer_v1
 
 
 
-AI_Tools.genPasswords(Scraper.GenInterest("candidate"))
+print(AI_Tools.genPasswords(Scraper.GenInterest("candidate")))
 

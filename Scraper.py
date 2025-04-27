@@ -5,6 +5,6 @@ def GenInterest(candidate):
     
     #candidate will be a user name that will then be given some atrabute interests that will be returned to be sent to the AI tool
     
-    interests= "horse, yellow,2"
+    interests= "horse, yellow, 2"
     return interests
 
