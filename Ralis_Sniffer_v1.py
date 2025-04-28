@@ -3,6 +3,8 @@ import subprocess
 import sys
 import requests
 import json
+import AI_Tools
+
 
 first_name, last_name = "", ""
 
@@ -77,7 +79,6 @@ def invokeSherlock(possible_usernames):
         # "--no-txt", # Stops creation of txt output files (temporary possibly)
         "--csv",
         "--timeout", "10",
-        "--print-all",
         "--folderoutput", "term_project",
         "--site", "Reddit",
         "--site", "Twitter",
@@ -130,13 +131,14 @@ def getUsernames():
 
     print(f"\n[*] Retrieving possible aliases for {last_name}, {first_name}...")
 
-    return sendToChat(f"Give me a list of username ideas for myself, {first_name} {last_name}. Here is some more information about me to help make it seem more personable: {data_from_user} ", 0)
+    possible_usernames= AI_Tools.DecodeAIRetur(AI_Tools.GetResponse(f"Give me a list of username ideas for myself, {first_name} {last_name}. Here is some more information about me to help make it seem more personable: {data_from_user} "))
+    print(possible_usernames)
+    return invokeSherlock(possible_usernames)
 
-def getPasswords():
 
-    results = sendToChat(f"I have a username, but I want to make a secure password for myself, {first_name} {last_name}. Give me many passwords thatI could use on a major social media site. Here is some more information about me to help make the password more memorable: {data_from_user} ", 0)
-    possible_passwords = results # it will likely not be that easy
-    return possible_passwords
+""" def getPasswords():
+
+    AI_Tools.genPasswords("")
 
 def buildAttackList(sites_and_unames_mapped):
     print("[*]",end="")
@@ -160,7 +162,7 @@ def buildAttackList(sites_and_unames_mapped):
     input()
 
     print("Boom!\nFrom here we can either save a csv for a dictionary attack later, or try to implment one right here.")
-
+ """
 def main():
     if len(sys.argv) == 3:
         global first_name
@@ -173,9 +175,8 @@ def main():
         global possible_passwords
 
         possible_usernames = getUsernames()
-        possible_passwords = getPasswords()
-
-        buildAttackList(invokeSherlock(possible_usernames))
+        print(possible_usernames)
+        invokeSherlock(possible_usernames)
 
     except KeyboardInterrupt:
         print("[*] Program terminated. Exiting...")
