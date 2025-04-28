@@ -9,6 +9,9 @@ def csv_to_array(file_path):
     with open(file_path,'r') as file:
         csv_reader=csv.reader(file)
         for row in csv_reader:
+            
+            #some sort of filter to only keep in the URLs
+            
             Data_array.append(row)
             
     return Data_array
