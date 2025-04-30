@@ -121,31 +121,22 @@ def getUsernames():
 
 def getPasswords(possible_usernames):
 
-    query_to_passwords = [[]*2]*len(possible_usernames)
+    query_to_passwords = []
 
     print( ("\033[93m {}\033[00m" .format(f"~Password Mode~")) )
 
     if not data_from_user == None:
         query_to_passwords.append(data_from_user)
 
-    '''This is Pseudo-code for the scraper 
-    # <<<START PSEEDOCODE>>>
-    # scraper = new Scraper() # Total placeholder. Probably will be done in scraper.py
-    # data_from_social_media = ["placeholder"]
-    # data_from_social_media.append(scraper.scrape(Reddit, [Descriptions, posts, etc...]))
-    # data_from_social_media.append(scraper.scrape(Twitter/X, [Descriptions, posts, etc...]))
-    # data_from_social_media.append(scraper.scrape(Instagram, [Descriptions, posts, etc...]))
-    # query_to_passwords.append(data_from_social_media)
-    # <<<END PSEUDOCODE>>>'''
 
-
+    possible_pass =[[]*2]*len(possible_usernames)
     for i in possible_usernames:
-        query_to_passwords[i][0]=possible_usernames[i]
-        query_to_passwords[i][1]=AI_Tools.genPasswords(Scraper.GenInterest(possible_usernames[i]))
+         possible_pass[i][0]=possible_usernames[i]
+         possible_pass[i][1]=AI_Tools.genPasswords(Scraper.GenInterest(possible_usernames[i],data_from_user))
 
     print( ("\033[92m {}\033[00m" .format(f"Building attack profiles for {last_name}, {first_name}...")) )
 
-    return AI_Tools.genPasswords(query_to_passwords)
+    return AI_Tools.genPasswords(possible_pass)
 
 
 

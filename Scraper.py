@@ -16,21 +16,20 @@ def csv_to_array(file_path):
             
     return Data_array
 
-def GetPageMetaData(URL):
+def GetPageMetaData(URL,otherData):
     response = requests.get(URL)
     soup = BeautifulSoup(response.text)
     metas = soup.find_all('meta')
     metas=str(metas)
-    interests = AI_Tools.DecodeAIRetur(AI_Tools.GetResponse(f"based on the following meta data, {metas} what are the interest of this accounts, give a list of 5 answers with no comentary"))
+    interests = AI_Tools.DecodeAIRetur(AI_Tools.GetResponse(f"based on the following meta data, {metas} and {otherData} what are the interest of this accounts, give a list of 5 answers with no comentary"))
     return interests
 
-def GenInterest(candidateFile):
+def GenInterest(candidateFile, otherData):
     
     #candidate will be a user name that will then be given some atrabute interests that will be returned to be sent to the AI tool
     interest =[]
-    Accounts=csv_to_array(candidateFile)
     
-    for i in Accounts:
-        GetPageMetaData(i)
+    for i in candidateFile:
+        GetPageMetaData(i,otherData)
     return interest
 
