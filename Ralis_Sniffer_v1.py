@@ -119,9 +119,9 @@ def getUsernames():
 
     return possible_usernames
 
-def getPasswords():
+def getPasswords(possible_usernames):
 
-    query_to_passwords = []
+    query_to_passwords = [[]*2]*len(possible_usernames)
 
     print( ("\033[93m {}\033[00m" .format(f"~Password Mode~")) )
 
@@ -137,6 +137,11 @@ def getPasswords():
     # data_from_social_media.append(scraper.scrape(Instagram, [Descriptions, posts, etc...]))
     # query_to_passwords.append(data_from_social_media)
     # <<<END PSEUDOCODE>>>'''
+
+
+    for i in possible_usernames:
+        query_to_passwords[i][0]=possible_usernames[i]
+        query_to_passwords[i][1]=AI_Tools.genPasswords(Scraper.GenInterest(possible_usernames[i]))
 
     print( ("\033[92m {}\033[00m" .format(f"Building attack profiles for {last_name}, {first_name}...")) )
 
