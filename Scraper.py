@@ -21,8 +21,8 @@ def GetPageMetaData(URL):
     soup = BeautifulSoup(response.text)
     metas = soup.find_all('meta')
     metas=str(metas)
-    AI_Tools.DecodeAIRetur(AI_Tools.GetResponse(f"based on the following meta data, {metas} what are the interest of this accounts, give a list of 5 answers with no comentary"))
-    return
+    interests = AI_Tools.DecodeAIRetur(AI_Tools.GetResponse(f"based on the following meta data, {metas} what are the interest of this accounts, give a list of 5 answers with no comentary"))
+    return interests
 
 def GenInterest(candidateFile):
     
