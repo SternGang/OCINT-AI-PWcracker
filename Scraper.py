@@ -14,7 +14,7 @@ def csv_to_array(file_path):
 
 def GetPageMetaData(URL,otherData):
     response = requests.get(URL)
-    soup = BeautifulSoup(response.text)
+    soup = BeautifulSoup(response.text, features="lxml")
     metas = soup.find_all('meta')
     metas=str(metas)
     interests = AI_Tools.DecodeAIRetur(AI_Tools.GetResponse(f"based on the following data, {metas} and {otherData} what are the interest of this accounts, give a list of 5 answers with no comentary"))

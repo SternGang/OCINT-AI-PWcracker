@@ -180,7 +180,7 @@ def buildAttackList(target_websites, target_passwords):
 
     dt = datetime.now().strftime("%c")
 
-    path_to_output = f"results/Attack_List_{dt.replace(' ', '_')}.csv"
+    path_to_output = f"results/Attack_List_{dt.replace(' ', '_').replace(':', '_')}.csv"
     results_file = open(path_to_output, "a")
     for entry in attack_list:
         results_file.write(str(entry))
