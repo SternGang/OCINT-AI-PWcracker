@@ -7,15 +7,7 @@ import requests # If we want to do any preliminary internet connection testing
 import AI_Tools # Local interface with Meta AI
 import Scraper # Local interface with Beautifuls Soup
 
-first_name, last_name, user_name = "", "", ""
-
-possible_usernames = [
-    ""
-]
-
-possible_passwords = [
-    ""
-]
+first_name, last_name = "", ""
 
 data_from_user = [
     ""
@@ -62,24 +54,23 @@ def invokeSherlock(possible_usernames):
 
     return new_array
 
-def getUsernames():
-    global user_name
-    global first_name
-    global last_name
+def getUsernames(passed_username):
     global data_from_user
-
+    specific_usernames = ""
     mode = "default"
 
     # prompt for username (skip if passed username(s))
-    if not user_name:
-        print("[*] Do you know the username(s) you want to check? Type 'yes' Otherwise press ENTER.")
+    if not passed_username:
+        print("[*] Do you know any of the username(s) you want to check? Type 'yes' Otherwise press ENTER.")
         if input() == 'yes':
             print("[*] Please enter the USERNAME. If there is more than one, seperate each one by a comma:")
-            user_name = [i.strip() for i in input().split(',')]
-        elif not user_name:
+            specific_usernames = input().strip().split(',')
+            print(specific_usernames)
+        elif not specific_usernames:
             print( ("\033[91m {}\033[00m" .format(f"! NO USERNAMES PROVIDED !")) )
         mode = "username"
 
+    # prompt for first and last name
     print("[*] Please enter the Person's FIRST NAME:")
     first_name = input()
     print("[*] Please enter the Person's LAST NAME:")
@@ -94,9 +85,12 @@ def getUsernames():
 
     print(f"\tInclude information regarding their identity such as,\n\tcontact information, residences, places of employment,\n\tfamily member names, pet names or animal type,\n\thobbies, interests, favorite colors or numbers,\n\tetceterea...")
     
+    # Pass this data to the LLM for context
     data_from_user.append(f"My name is {first_name} {last_name}.")
+    if(specific_usernames):
+        data_from_user.append(f"I already have some usernames already: {specific_usernames}. Please do not change them but put them at the top of your list that you give me.")
 
-    # Collect multiple lines of input
+    # Collect multiple lines of input to be passed to the LLM
     while True:
         user_input = input()
             
@@ -106,17 +100,27 @@ def getUsernames():
         data_from_user.append(f"{user_input}, ")
 
     if mode == "default":
-        return [i.strip() for i in user_name.split(',')]
+        return [i.strip() for i in passed_username.split(',')]
 
     print( ("\033[92m {}\033[00m" .format(f"\n[*] Retrieving possible aliases for, {first_name} {last_name}...")) )
 
-    possible_usernames= AI_Tools.DecodeAIRetur(AI_Tools.GetResponse(f"Give me a list of username ideas for myself, {first_name} {last_name}. I want these usernames to really represent me and my interests, so here is some more information about me to help make it seem more personable: {data_from_user}. You will respond with only a list of at least 20 usernames that are seperated by a comma only; no whitespace or new lines. If for some reason, you encounter an issue or are unable to comply with this request, you will respond with, \"ERROR\" in the first line and you will explain what issue you encountered in one sentence."))
+    # possible_usernames= AI_Tools.DecodeAIRetur(AI_Tools.GetResponse(f"Give me a list of username ideas for myself. I want these usernames to really represent me and my interests, so here is some more information about me to help make it seem more personable: {data_from_user}. You will respond with only a list of at least 20 usernames that are seperated by a comma only; no whitespace or new lines. If for some reason, you encounter an issue or are unable to comply with this request, you will respond with, \"ERROR\" in the first line and you will explain what issue you encountered in one sentence."))
+    possible_usernames= AI_Tools.genUsernames(data_from_user)
     if possible_usernames.startswith("ERROR"):
         print( ("\033[95m {}\033[00m" .format(f"{possible_usernames}")) )
         sys.exit(-1)
     else:
         possible_usernames = [i.strip() for i in possible_usernames.split(',')]
 
+    print(possible_usernames)
+    print("\n\n")
+
+    while possible_usernames and " " in possible_usernames[-1]:
+        possible_usernames.pop()
+
+    print(possible_usernames)
+    print("\n\n")
+    
     return possible_usernames
 
 def getPasswords(possible_usernames):
@@ -136,9 +140,7 @@ def getPasswords(possible_usernames):
 
     print( ("\033[92m {}\033[00m" .format(f"Building attack profiles for {last_name}, {first_name}...")) )
 
-    return AI_Tools.genPasswords(possible_pass)
-
-
+    return possible_pass
 
 def buildAttackList(target_websites, target_passwords):
     print("[*]",end="")
@@ -163,41 +165,44 @@ def buildAttackList(target_websites, target_passwords):
 
     dt = datetime.now().strftime("%c")
 
-    path_to_output = f"results/Attack_List_{dt}.csv"
+    path_to_output = f"results/Attack_List_{dt.replace(' ', '_')}.csv"
     results_file = open(path_to_output, "a")
     for entry in attack_list:
         results_file.write(str(entry))
     
-    print(f"[*] {dt.replace(' ', '_').replace(':', '_')} Created file. \n\nTry: \"cat {path_to_output}\"")
+    print(f"[*] {dt.replace('_', ' ').replace(':', '_')} Created file. \n\nTry: \"cat {path_to_output}\"")
 
 def main():
-
     global first_name
     global last_name
-    global user_name
+    passed_user_name = ""
 
     if len(sys.argv) >= 2:
         if sys.argv[1] == "--help":
-            print(f"usage: \"path\\to\\python\" \"path\\to\\scripty.py [arguments:optional]\n\n\tOptional Arguments:\n\t--help\t(prints this message)\n\t[USERNAME]\ta username with no spaces to enter literal mode\n\t[FIRST NAME] [LAST NAME] to enter verbose mode\n\t\t*You will be prompted for more info*\n\nStill having trouble? Try: \"pip install --user sherlock-project\"")
+            print(f"usage: \"path\\to\\python\" \"path\\to\\scripty.py [arguments:optional]\n\n\tOptional Arguments:\n\t--help\t\tprints the usage information(this message)\n\t[USERNAME]\ta username with no spaces to skip username mode\n\t\t*You will NOT be prompted for more entries*\n\nStill having trouble? Try: \"pip install --user sherlock-project\"")
             sys.exit(0)
         else:
             for i in sys.argv[1:]:
-                user_name = i
+                passed_user_name = i
 
     try:
-        global possible_usernames
-        global possible_passwords
+        
+        # possible_usernames = [
+        #     ""                  
+        # ]
 
-        possible_usernames = getUsernames()
+        # possible_passwords = [
+        #     ""
+        # ]   
+
+        possible_usernames = getUsernames(passed_user_name)
         sites_to_attack = invokeSherlock(possible_usernames)
-        possible_passwords = getPasswords()
+        possible_passwords = getPasswords(sites_to_attack)
 
         buildAttackList(sites_to_attack, possible_passwords)
 
     except KeyboardInterrupt:
-        print( ("\033[90m {}\033[00m" .format(f"\n.\n[*] Program terminated. Exiting...")) )
-        # "Building attack profiles for {user_name}...")) )
-        
+        print( ("\033[90m {}\033[00m" .format(f"\n.\n[*] Program terminated. Exiting...")) )        
 
 if __name__ == '__main__':
     main()
