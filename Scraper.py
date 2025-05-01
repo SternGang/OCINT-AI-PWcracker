@@ -1,7 +1,6 @@
 import csv
 import requests
 from bs4 import BeautifulSoup
-import Ralis_Sniffer_v1
 import AI_Tools
 
 def csv_to_array(file_path):
