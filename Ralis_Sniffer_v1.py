@@ -123,7 +123,7 @@ def getUsernames(passed_username):
     
     return possible_usernames
 
-def getPasswords(possible_usernames):
+def getPasswords(LinkList):
 
     query_to_passwords = []
 
@@ -133,10 +133,12 @@ def getPasswords(possible_usernames):
         query_to_passwords.append(data_from_user)
 
 
-    possible_pass =[[]*2]*len(possible_usernames)
-    for i in possible_usernames:
-         possible_pass[i][0]=possible_usernames[i]
-         possible_pass[i][1]=AI_Tools.genPasswords(Scraper.GenInterest(possible_usernames[i],data_from_user))
+    possible_pass = []
+    count =1
+    print(len(LinkList))
+    for i in LinkList:
+        possible_pass.append(AI_Tools.genPasswords(Scraper.GetPageMetaData(i,data_from_user)))
+        count=count+1
 
     print( ("\033[92m {}\033[00m" .format(f"Building attack profiles for {last_name}, {first_name}...")) )
 
