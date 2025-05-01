@@ -25,7 +25,7 @@ def invokeSherlock(possible_usernames):
         # "--no-color", # Disable color output (consider changing)
         # "--no-txt", # Stops creation of txt output files (does not exist in this version)
         # "--csv", # Makes CSV files in addition to the .txt
-        "--timeout", "10",
+        "--timeout", "5",
         "--folderoutput", "results",
         "--site", "Reddit",
         "--site", "Twitter",
@@ -112,6 +112,11 @@ def getUsernames(passed_username):
     else:
         possible_usernames = [i.strip() for i in possible_usernames.split(',')]
 
+    if not specific_usernames == None:
+        for index in range(len(specific_usernames)):
+            if not specific_usernames[index] == specific_usernames[index]:
+                possible_usernames.append(specific_usernames[index])
+
     print(possible_usernames)
     print("\n\n")
 
@@ -123,7 +128,7 @@ def getUsernames(passed_username):
     
     return possible_usernames
 
-def getPasswords(LinkList):
+def getPasswords(list_of_links):
 
     query_to_passwords = []
 
@@ -132,23 +137,30 @@ def getPasswords(LinkList):
     if not data_from_user == None:
         query_to_passwords.append(data_from_user)
 
+    query_to_passwords.append(f"Here are the websites that I frequently use, in case it helps you. {list_of_links}")
 
-    possible_pass = []
-    count =1
-    print(len(LinkList))
-    for i in LinkList:
-        possible_pass.append(AI_Tools.genPasswords(Scraper.GetPageMetaData(i,data_from_user)))
-        count=count+1
+    print("")
+    possible_passwords = []
+    count = len(list_of_links)
+    
+    for entry in list_of_links:
+        print( ("\033[92m {}\033[00m" .format(f"[+]Generating password solutions for {entry}{count}[*] sites left.")) )
+        query_to_passwords.append(Scraper.GetPageMetaData(entry,data_from_user))
+        count = count - 1
 
-    print( ("\033[92m {}\033[00m" .format(f"Building attack profiles for {last_name}, {first_name}...")) )
+    LLM_response = AI_Tools.genPasswords(query_to_passwords)
+    # possible_passwords = [i.strip() for i in LLM_response.split(',')]
+    possible_passwords = LLM_response
 
-    return possible_pass
+    print(f"Password generation complete!")
+
+    return possible_passwords
 
 def buildAttackList(target_websites, target_passwords):
     print("[*]",end="")
     print( ("\033[92m {}\033[00m" .format(f"Building attack profiles for {last_name}, {first_name}...")) )
 
-    target_passwords = [i.strip() for i in target_passwords.split(',')]
+    # target_passwords = [i.strip() for i in target_passwords.split(',')]
 
     attack_list = []
 
@@ -188,14 +200,6 @@ def main():
                 passed_user_name = i
 
     try:
-        
-        # possible_usernames = [
-        #     ""                  
-        # ]
-
-        # possible_passwords = [
-        #     ""
-        # ]   
 
         possible_usernames = getUsernames(passed_user_name)
         sites_to_attack = invokeSherlock(possible_usernames)
